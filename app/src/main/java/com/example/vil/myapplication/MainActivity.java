@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -56,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
         }else if(v.getId() == R.id.move){
             chStamp.setChecked(true);
             canvas.move();
+        }else if(v.getId() == R.id.scale){
+            chStamp.setChecked(true);
+            canvas.scale();
+        }else if(v.getId() == R.id.skew){
+            chStamp.setChecked(true);
+            canvas.skew();
         }
     }
 
@@ -70,7 +77,37 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == 1){
+            if (item.isChecked()){
+                item.setChecked(false);
+            }else{
+                item.setChecked(true);
+            }
+            canvas.blur(item.isChecked());
 
+        }else if(item.getItemId() == 2){
+            if(item.isChecked()){
+                item.setChecked(false);
+            }else{
+                item.setChecked(true);
+            }
+            canvas.color(item.isChecked());
+        }else if(item.getItemId() == 3){
+            if(item.isChecked()){
+                item.setChecked(false);
+            }else{
+                item.setChecked(true);
+            }
+            canvas.bigPen(item.isChecked());
+        }else if(item.getItemId() == 4){
+            canvas.setRed();
+        }else{
+            canvas.setBlue();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void checkPermission(){
         int permissioninfo = ContextCompat.checkSelfPermission(this,

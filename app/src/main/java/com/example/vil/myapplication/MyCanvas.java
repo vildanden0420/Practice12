@@ -3,11 +3,14 @@ package com.example.vil.myapplication;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Environment;
-import android.support.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +34,12 @@ public class MyCanvas extends View {
     Bitmap mBitmap;
     Paint mPaint;
     Boolean checked = true;
-    String option = "";
+    float[] matrixarray = {
+            2f, 0f, 0f, 0f, -25f,
+            0f, 2f, 0f, 0f, -25f,
+            0f, 0f, 2f, 0f, -25f,
+            0f, 0f, 0f, 1f, 0f,
+    };
 
     int oldX = -1; int oldY = -1;
 
@@ -122,6 +130,50 @@ public class MyCanvas extends View {
         mCanvas.translate(10, 10);
     }
 
+    public void scale(){
+        mCanvas.scale(1.5f, 1.5f);
+    }
+
+    public void skew(){
+        mCanvas.skew(0.2f, 0.0f);
+    }
+
+    public void blur(Boolean checked){
+        if(checked){
+            BlurMaskFilter blur = new BlurMaskFilter(100, BlurMaskFilter.Blur.INNER);
+            mPaint.setMaskFilter(blur);
+            invalidate();
+        }else{
+            mPaint.setMaskFilter(null);
+        }
+    }
+
+    public void color(Boolean checked){
+        if(checked){
+            ColorMatrix matrix = new ColorMatrix(matrixarray);
+            mPaint.setColorFilter(new ColorMatrixColorFilter(matrix));
+
+        }else{
+            mPaint.setColorFilter(null);
+        }
+    }
+
+    public void bigPen(Boolean checked){
+        if(checked){
+            mPaint.setStrokeWidth(5);
+        }else{
+            mPaint.setStrokeWidth(3);
+        }
+    }
+
+    public void setRed(){
+        mPaint.setColor(Color.RED);
+    }
+
+    public void setBlue(){
+        mPaint.setColor(Color.BLUE);
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -136,10 +188,29 @@ public class MyCanvas extends View {
                 }
                 oldX = X; oldY = Y;
                 break;
+            case MotionEvent.ACTION_MOVE:
+                if(oldX != -1){
+                    if(checked){
+                        mCanvas.drawLine(oldX, oldY, X, Y, mPaint);
+                        invalidate();
+                    }
+                }
+                oldX = X; oldY = Y;
+                break;
+            case MotionEvent.ACTION_UP:
+                if(oldX != -1){
+                    if(checked){
+                        mCanvas.drawLine(oldX, oldY, X, Y, mPaint);
+                        invalidate();
+                    }
+                }
+                oldX = -1;
+                oldY = -1;
+                break;
         }
 
 
 
-        return super.onTouchEvent(event);
+        return true;
     }
 }
